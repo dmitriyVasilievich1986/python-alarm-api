@@ -55,17 +55,21 @@ class MYSQL_Database:
     # endregion
 
     def get_all_alarms(self):
-        """отправляет запрос в БД для получения всех будильников,
-        установленных на сегодняшний день.
+        """отправляет запрос в БД для получения всех будильников
 
         Returns:
             list: список будильников.
         """
 
-        if self.send_command_to_db(
-            f"SELECT * FROM {TABLE_NAME} WHERE DATE(time) = CURDATE()"
-        ):
-            return self.cursor.fetchall()
+        if self.send_command_to_db(f"SELECT name, description, time FROM {TABLE_NAME}"):
+            return [
+                {
+                    "name": x[0],
+                    "description": x[1],
+                    "time": x[2].strftime("%Y-%m-%d %H:%M"),
+                }
+                for x in self.cursor.fetchall()
+            ]
         return []
 
     def insert_new_alarm(self, name, time_stamp, description=""):
@@ -74,10 +78,13 @@ class MYSQL_Database:
         Args:
             name (str): название будильника
             time_stamp (str): время срабатывания
-            description (str, optional): описание будильника. Defaults to "".
+            description (str, optional): описание будильника.
         """
 
         if self.send_command_to_db(
             f"insert into {TABLE_NAME} (name, description, time) values ('{name}', '{description}', '{time_stamp}');"
         ):
             self.db.commit()
+
+
+mysql_database = MYSQL_Database()

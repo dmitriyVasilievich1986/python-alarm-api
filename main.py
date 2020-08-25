@@ -1,3 +1,3 @@
-from alarm.database.db_class import MYSQL_Database
+from alarm.api.api_server import app
 
-mysql_database = MYSQL_Database()
+app.run()
