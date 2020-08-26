@@ -8,13 +8,6 @@ app = Flask(__name__)
 
 @app.route("/alarm", methods=["GET", "POST"])
 def alarm(*args, **kwargs):
-    """api для получения списка будильников
-    и установки нового будильника.
-
-    Returns:
-        str: если метод "GET" - список будильников.
-    """
-
     if request.method == "GET":
         return json.dumps(mysql_database.get_all_alarms())
     elif request.method == "POST":
@@ -24,3 +17,4 @@ def alarm(*args, **kwargs):
         )
         return "Ok"
     return "Not Ok"
+

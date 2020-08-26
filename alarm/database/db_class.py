@@ -49,7 +49,7 @@ class MYSQL_Database:
         """
 
         self.send_command_to_db(
-            f"CREATE TABLE IF NOT EXISTS {TABLE_NAME} (name VARCHAR(255) NOT NULL, description VARCHAR(255), time DATETIME NOT NULL);"
+            f"CREATE TABLE IF NOT EXISTS {TABLE_NAME} (id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, description VARCHAR(255), time DATETIME NOT NULL);"
         )
 
     # endregion
@@ -61,12 +61,15 @@ class MYSQL_Database:
             list: список будильников.
         """
 
-        if self.send_command_to_db(f"SELECT name, description, time FROM {TABLE_NAME}"):
+        if self.send_command_to_db(
+            f"SELECT id, name, description, time FROM {TABLE_NAME}"
+        ):
             return [
                 {
-                    "name": x[0],
-                    "description": x[1],
-                    "time": x[2].strftime("%Y-%m-%d %H:%M"),
+                    "id": x[0],
+                    "name": x[1],
+                    "description": x[2],
+                    "time": x[3].strftime("%Y-%m-%d %H:%M"),
                 }
                 for x in self.cursor.fetchall()
             ]
@@ -84,6 +87,15 @@ class MYSQL_Database:
         if self.send_command_to_db(
             f"insert into {TABLE_NAME} (name, description, time) values ('{name}', '{description}', '{time_stamp}');"
         ):
+            self.db.commit()
+
+    def delete_alarm(self, id):
+        """удаляем будильник
+
+        Args:
+            id (bool): возвращает булево значение о выполнении запроса.
+        """
+        if self.send_command_to_db(f"DELETE FROM {TABLE_NAME} WHERE id={id}"):
             self.db.commit()
 
 
